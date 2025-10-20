@@ -1,0 +1,52 @@
+{% extends "tickets/base.html" %}
+
+{% block title %}{% if single_event_mode %}{{ event.name }} - Bilet Oluştur{% else %}Etkinlikler{% endif %}{% endblock %}
+
+{% block content %}
+  {% if not single_event_mode %}
+    <h1>Etkinlikler</h1>
+    <div class="row">
+      {% for event in events %}
+        <div class="col-md-6 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ event.name }}</h5>
+              <p class="card-text">{{ event.date_time|date:"Y-m-d H:i" }} — {{ event.location }}</p>
+              <p class="card-text"><strong>Satılan bilet:</strong> {{ event.tickets_sold }} / {{ event.max_tickets }}</p>
+              <a class="btn btn-primary" href="{% url 'tickets:event_landing' event.id %}">Bilet Al</a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p>Henüz etkinlik yok.</p>
+      {% endfor %}
+    </div>
+  {% else %}
+    <h1>{{ event.name }}</h1>
+    <p>{{ event.date_time|date:"Y-m-d H:i" }} — {{ event.location }}</p>
+    <p>Satılan bilet: {{ event.tickets_sold }} / {{ event.max_tickets }}</p>
+
+    <div class="card">
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.attendee_name.label_tag }}
+            {{ form.attendee_name }}
+            {% for error in form.attendee_name.errors %}
+              <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="mb-3">
+            {{ form.plus_ones.label_tag }}
+            {{ form.plus_ones }}
+            {% for error in form.plus_ones.errors %}
+              <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-success">Davetiyemi Oluştur</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

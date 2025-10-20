@@ -1,0 +1,130 @@
+{% extends 'tickets/base.html' %}
+{% load static %}
+
+{% block title %}Hoş Geldiniz - QR Bilet Sistemi{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">QR Bilet Sistemine Giriş</h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Logo veya banner ekleyebilirsiniz -->
+                    <div class="text-center mb-4">
+                        <img src="{% static 'images/logo.png' %}" alt="Logo" height="60" class="mb-3">
+                        <h4>Giriş Yapın</h4>
+                        <p class="text-muted">Devam etmek için hesabınıza giriş yapın</p>
+                    </div>
+
+                    <!-- Mesajlar -->
+                    {% if messages %}
+                    <div class="alert-container">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Login Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Kullanıcı Adı</label>
+                            <input type="text" 
+                                   name="username" 
+                                   class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                                   id="id_username" 
+                                   placeholder="Kullanıcı adınızı girin"
+                                   required>
+                            {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.username.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Şifre</label>
+                            <input type="password" 
+                                   name="password" 
+                                   class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+                                   id="id_password" 
+                                   placeholder="Şifrenizi girin"
+                                   required>
+                            {% if form.password.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.password.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Ek Bilgiler -->
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-user-shield"></i><br>
+                                    Admin
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-qrcode"></i><br>
+                                    Scanner
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public Bilet Alma Linki -->
+            <div class="text-center mt-4">
+                <p class="text-muted">Bilet mi almak istiyorsunuz?</p>
+                <a href="{% url 'tickets:event_landing' event_id=1 %}" class="btn btn-outline-success">
+                    <i class="fas fa-ticket-alt"></i> Bilet Al
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #0056b3, #004494);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+</style>
+{% endblock %}
