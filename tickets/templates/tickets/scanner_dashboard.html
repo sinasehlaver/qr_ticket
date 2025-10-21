@@ -444,13 +444,11 @@ function getCookie(name) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('QR Scanner initialized');
     function onScanSuccess(decodedText, decodedResult) {
         const now = Date.now();
         if (now - lastScannedAt < 3000) return; // 3s debounce
         lastScannedAt = now;
         const ticketUuid = decodedText.trim();
-        console.log('Scan success', ticketUuid);
         checkTicket(ticketUuid);
         // don't stop scanner — allow continuous scanning
     }
@@ -480,8 +478,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const cameraId = (selectedCamera && selectedCamera.id) ? selectedCamera.id : cameras[0].id;
-
-            console.log('Selected camera for scanning:', selectedCamera ? selectedCamera.label : cameraId);
 
             return html5QrcodeScanner.start(
             cameraId,

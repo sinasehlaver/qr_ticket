@@ -71,7 +71,6 @@ def home(request):
 
     # Login form işleme
     if request.method == 'POST':
-        print("POST request received")
 
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -93,14 +92,12 @@ def home(request):
         else:
             messages.error(request, "Geçersiz kullanıcı adı veya şifre.")
     else:
-        print("GET request received")
         form = AuthenticationForm()
     
     return render(request, 'tickets/home.html', {'form': form})
 
 def event_list(request):
     # Simple list of upcoming events
-    print("Fetching event list")
     events = Event.objects.order_by('date_time')
     add_form = EventForm() if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser) else None
     return render(request, 'tickets/event_landing.html', {'events': events, 'single_event_mode': False, 'add_form': add_form})
@@ -196,7 +193,6 @@ def use_ticket(request, ticket_uuid):
         
         ticket.status = 'used'
         ticket.save()
-        print("Ticket marked as used:", ticket_uuid)
         return JsonResponse({
             'success': True, 
             'message': 'Bilet başarıyla kullanıldı'
