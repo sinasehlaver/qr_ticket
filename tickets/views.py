@@ -40,7 +40,7 @@ def home(request):
                     return redirect('admin:index')
                 else:
                     if request.user.is_staff:
-                        return redirect('scanner_dashboard')
+                        return redirect('tickets:scanner_dashboard')
             else:
                 messages.error(request, "Geçersiz kullanıcı adı veya şifre.")
         else:
