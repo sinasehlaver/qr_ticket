@@ -36,10 +36,11 @@ def home(request):
                 messages.success(request, f'Hoş geldiniz {username}!')
                 
                 # Kullanıcı tipine göre yönlendirme
-                if user.is_staff or user.is_superuser:
+                if user.is_superuser:
                     return redirect('admin:index')
                 else:
-                    return redirect('scanner_dashboard')
+                    if request.user.is_staff:
+                        return redirect('scanner_dashboard')
             else:
                 messages.error(request, "Geçersiz kullanıcı adı veya şifre.")
         else:
@@ -72,10 +73,12 @@ def event_create(request):
         form = EventForm()
     return render(request, 'tickets/event_add.html', {'form': form})
 
+@login_required
 def event_detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     tickets = Ticket.objects.filter(event=event).order_by('-checked_in_at', '-attendee_name')
     return render(request, 'tickets/event_detail.html', {'event': event, 'tickets': tickets})
+
 
 def event_landing(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
@@ -102,7 +105,7 @@ def ticket_display(request, ticket_uuid):
     ticket = get_object_or_404(Ticket, unique_id=ticket_uuid)
     return render(request, 'tickets/ticket_display.html', {'ticket': ticket})
 
-#@login_required
+@login_required
 def scanner_dashboard(request):
     # Allow admin or users in Scanner group or staff
     print(request.user)
@@ -113,6 +116,7 @@ def scanner_dashboard(request):
         return HttpResponseForbidden("You are not authorized to access the scanner.")
     return render(request, 'tickets/scanner_dashboard.html')
 
+@login_required
 def check_ticket(request, ticket_uuid):
     """QR okunduğunda bilet bilgilerini getir"""
     try:
@@ -132,6 +136,7 @@ def check_ticket(request, ticket_uuid):
     except Ticket.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Bilet bulunamadı'})
 
+@login_required
 def use_ticket(request, ticket_uuid):
     """Bilet kullanıldı olarak işaretle"""
     try:

@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
 urlpatterns = [
+    path('admin/login/', RedirectView.as_view(pattern_name='tickets:home', permanent=False)),
     path('admin/', admin.site.urls),
     path('', include('tickets.urls')),
 ]

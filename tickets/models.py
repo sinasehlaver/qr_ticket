@@ -28,8 +28,8 @@ class Ticket(models.Model):
     STATUS_UNUSED = 'unused'
     STATUS_USED = 'used'
     STATUS_CHOICES = [
-        (STATUS_UNUSED, 'Not Used'),
-        (STATUS_USED, 'Used'),
+        (STATUS_UNUSED, 'Girmedi'),
+        (STATUS_USED, 'Girdi'),
     ]
 
     event = models.ForeignKey(Event, related_name='tickets', on_delete=models.CASCADE)
@@ -46,6 +46,9 @@ class Ticket(models.Model):
 
     def __str__(self):
         return f"Ticket {self.unique_id} for {self.attendee_name}"
+    
+    def get_status_display(self):
+        return dict(self.STATUS_CHOICES).get(self.status, 'Unknown')
 
     def get_absolute_url(self):
         return reverse('tickets:ticket_display', kwargs={'ticket_uuid': str(self.unique_id)})

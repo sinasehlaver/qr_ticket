@@ -26,7 +26,7 @@
                         <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6;">{{ ticket.id }}</td>
                         <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6;">{{ ticket.attendee_name }}</td>
                         <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6;">{{ ticket.plus_ones }}</td>
-                        <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6;">{% if ticket.status == 'used' %} Girdi {% else %} Girmedi {% endif %}</td>
+                        <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6;">{{ ticket.get_status_display }}</td>
                         <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6;">{{ ticket.checked_in_at|date:"Y-m-d H:i" }}</td>
                         <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6;">{{ ticket.created_at|date:"Y-m-d H:i" }}</td>
                     </tr>

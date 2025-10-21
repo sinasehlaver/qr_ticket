@@ -3,9 +3,9 @@ from pathlib import Path
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-LOGIN_URL = 'home'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'tickets:home'
+LOGIN_REDIRECT_URL = 'tickets:event_list'
+LOGOUT_REDIRECT_URL = 'tickets:home'
 # SECRET_KEY
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-me")
 

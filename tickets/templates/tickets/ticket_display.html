@@ -5,12 +5,12 @@
 {% block content %}
   <div class="row">
     <div class="col-md-8">
-      <h2>{{ ticket.event.name }}</h2>
+      <h2 class="mt-4">{{ ticket.event.name }}</h2>
       <p><strong>Tarih:</strong> {{ ticket.event.date_time|date:"Y-m-d H:i" }}</p>
       <p><strong>Yer:</strong> {{ ticket.event.location }}</p>
       <hr/>
       <p><strong>Ad Soyad:</strong> {{ ticket.attendee_name }}</p>
-      <p><strong>Plus ones:</strong> {{ ticket.plus_ones }}</p>
+      <p><strong>+1 ler:</strong> {{ ticket.plus_ones }}</p>
       <p><strong>Durum:</strong> {{ ticket.get_status_display }}</p>
     </div>
     <div class="col-md-4 text-center">
