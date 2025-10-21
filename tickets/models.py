@@ -39,6 +39,7 @@ class Ticket(models.Model):
     qr_code = models.ImageField(upload_to=qr_upload_path, blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_UNUSED)
     created_at = models.DateTimeField(auto_now_add=True)
+    checked_in_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         ordering = ['-created_at']

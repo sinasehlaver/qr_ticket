@@ -72,6 +72,11 @@ def event_create(request):
         form = EventForm()
     return render(request, 'tickets/event_add.html', {'form': form})
 
+def event_detail(request, event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    tickets = Ticket.objects.filter(event=event).order_by('-checked_in_at', '-attendee_name')
+    return render(request, 'tickets/event_detail.html', {'event': event, 'tickets': tickets})
+
 def event_landing(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     # check max tickets
@@ -117,6 +122,8 @@ def check_ticket(request, ticket_uuid):
             'attendee_name': ticket.attendee_name,
             'plus_ones': ticket.plus_ones,
             'status': ticket.status,
+            'checked_in_at': ticket.checked_in_at,
+            'created_at': ticket.created_at,
             'event_name': ticket.event.name,
             'event_date': ticket.event.date_time.strftime('%d.%m.%Y %H:%M'),
             'event_location': ticket.event.location
