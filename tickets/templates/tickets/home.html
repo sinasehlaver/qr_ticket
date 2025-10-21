@@ -82,12 +82,14 @@
             </div>
 
             <!-- Public Bilet Alma Linki -->
+            {% if user.is_authenticated %}
             <div class="text-center mt-4">
                 <p class="text-muted">Bilet mi almak istiyorsunuz?</p>
                 <a href="{% url 'tickets:event_list' %}" class="btn btn-outline-success">
                     <i class="fas fa-ticket-alt"></i> Bilet Al
                 </a>
             </div>
+            {% endif %}
         </div>
     </div>
     {% endif %}

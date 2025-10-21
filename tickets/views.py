@@ -96,6 +96,7 @@ def home(request):
     
     return render(request, 'tickets/home.html', {'form': form})
 
+@login_required
 def event_list(request):
     # Simple list of upcoming events
     events = Event.objects.order_by('date_time')
