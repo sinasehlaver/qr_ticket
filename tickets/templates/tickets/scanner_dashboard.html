@@ -10,19 +10,19 @@
     
     <div class="row">
         <!-- QR Scanner -->
-        <div class="col-md-6">
+        <div class="col-md-5">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">QR Kodu Okutun</h5>
                 </div>
-                <div class="card-body">
-                    <div id="reader" width="100%"></div>
-                </div>
+            </div>
+            <div class="card-body p-2">
+                <div id="reader" class="reader-container" width="100%"></div>
             </div>
         </div>
         
         <!-- Bilet Bilgileri -->
-        <div class="col-md-6">
+        <div class="col-md-7">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Bilet Bilgileri</h5>
@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('QR Scanner initialized');
     function onScanSuccess(decodedText, decodedResult) {
         const now = Date.now();
-        if (now - lastScannedAt < 1500) return; // 1.5s debounce
+        if (now - lastScannedAt < 3000) return; // 3s debounce
         lastScannedAt = now;
         const ticketUuid = decodedText.trim();
         console.log('Scan success', ticketUuid);
@@ -360,16 +360,51 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+
+.reader-container {
+    width: 100%;
+    aspect-ratio: 4 / 3;           /* keeps a camera-friendly box */
+    min-height: 220px;             /* smaller minimum so info area is visible */
+    max-height: 420px;             /* prevent very tall camera area on large screens */
+    height: auto;
+    overflow: hidden;
+    border-radius: 8px;
+    position: relative;
+}
+.reader-container .html5-qrcode-video,
+.reader-container video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block;
+}
 #reader {
     border: 2px dashed #dee2e6;
     border-radius: 8px;
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative; /* needed for overlay */
+    width: 100%;
+    height: 100%;
+    position: absolute; /* video fills reader-container */
+    top: 0;
+    left: 0;
     transition: box-shadow 180ms ease, border-color 180ms ease;
 }
+
+.ticket-info-placeholder,
+#ticketInfo {
+    max-height: 360px;
+    overflow-y: auto;
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+/* increase ticket detail emphasis */
+.ticket-details h4 {
+    font-size: 1.15rem;
+    margin-bottom: .5rem;
+}
+
+.ticket-details .row { margin-bottom: .35rem; }
+
 
 /* visual flash states */
 #reader.flash-detect {
@@ -385,7 +420,6 @@ document.addEventListener('DOMContentLoaded', function() {
     border-color: #dc3545;
 }
 
-/* overlay text that fades in/out */
 .scan-overlay {
     position: absolute;
     top: 12px;
@@ -402,6 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
     pointer-events: none;
     z-index: 50;
 }
+
 .scan-overlay.show {
     opacity: 1;
     transform: translateY(0);
@@ -427,6 +462,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .btn:hover {
     transform: translateY(-2px);
+}
+
+@media (max-width: 767.98px) {
+    .reader-container { aspect-ratio: 16 / 9; min-height: 180px; max-height: 300px; }
+    #ticketInfo { max-height: 260px; }
 }
 </style>
 {% endblock %}
