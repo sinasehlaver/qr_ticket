@@ -10,7 +10,49 @@ from .models import Event, Ticket
 from .forms import TicketCreateForm, EventForm
 from django.contrib import messages
 from django.utils import timezone
+from django.db.models import Q
 
+def _normalize_query(q: str) -> str:
+    # collapse multiple spaces and trim
+    return ' '.join(q.split()).strip()
+
+@require_GET
+def search_tickets(request):
+    """
+    GET ?q=...
+    Returns a list of ticket objects (JSON). Matching is case-insensitive and robust to extra spaces.
+    """
+    q = (request.GET.get('q') or '').strip()
+    if not q:
+        return JsonResponse([], safe=False)
+
+    q_norm = _normalize_query(q)
+    tokens = [t for t in q_norm.split(' ') if t]
+
+    qs = Ticket.objects.all()
+
+    combined = Q()
+    for tok in tokens:
+        # match token in attendee_name OR first_name OR last_name (case-insensitive)
+        combined &= (
+            Q(attendee_name__icontains=tok)
+        )
+
+    qs = qs.filter(combined).order_by('-id')[:50]
+
+    results = []
+    for t in qs:
+        results.append({
+            'unique_id': str(getattr(t, 'unique_id', '') or ''),
+            'id': t.pk,
+            'attendee_name': getattr(t, 'attendee_name', ''),
+            'status': getattr(t, 'status', ''),
+            'event_name': getattr(getattr(t, 'event', None), 'name', '') or getattr(t, 'event_name', ''),
+            'event_location': getattr(t, 'event', '').location if getattr(t, 'event', None) else '',
+            'plus_ones': getattr(t, 'plus_ones', 0),
+        })
+
+    return JsonResponse(results, safe=False)
 
 @require_GET
 def auth_status(request):
@@ -143,6 +185,7 @@ def check_ticket(request, ticket_uuid):
 def use_ticket(request, ticket_uuid):
     """Bilet kullanıldı olarak işaretle"""
     try:
+        print("Marking ticket as used:", ticket_uuid)
         ticket = Ticket.objects.get(unique_id=ticket_uuid)
         
         if ticket.status == 'used':
@@ -153,12 +196,13 @@ def use_ticket(request, ticket_uuid):
         
         ticket.status = 'used'
         ticket.save()
-        
+        print("Ticket marked as used:", ticket_uuid)
         return JsonResponse({
             'success': True, 
             'message': 'Bilet başarıyla kullanıldı'
         })
     except Ticket.DoesNotExist:
+        print("Ticket not found:", ticket_uuid)
         return JsonResponse({'success': False, 'error': 'Bilet bulunamadı'})
 
 @login_required

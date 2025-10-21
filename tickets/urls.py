@@ -19,5 +19,7 @@ urlpatterns = [
     path('api/check_ticket/<uuid:ticket_uuid>/', views.check_ticket, name='check_ticket'),
     path('api/use_ticket/<uuid:ticket_uuid>/', views.use_ticket, name='use_ticket'),
     path('api/auth_status/', views.auth_status, name='auth_status'),  
-
+    path('api/search_tickets/', views.search_tickets, name='api_search_tickets'),
+    path('api/search_ticket/', views.search_tickets, name='api_search_ticket'),   # alias
+    path('api/tickets/search/', views.search_tickets, name='api_tickets_search'), # alias
 ]
