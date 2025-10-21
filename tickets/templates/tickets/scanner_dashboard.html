@@ -19,15 +19,28 @@
         <!-- Bilet Bilgileri -->
         <div class="col-md-7">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Bilet Bilgileri</h5>
-                </div>
                 <div class="card-body">
+                    <div class="ticket-details" id="ticketDetails" style="display: none;">
+                        <div class="row">
+                            <div class="col-7" id="ticketHolder">
+                                a
+                            </div>
+                            <div id="ticketActions" class="col-5">
+                                <button id="useTicket" class="btn btn-success"> a </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-7" id="ticketLocation">
+                                a
+                            </div>
+                            <div class="col-5" id="ticketEvent">
+                                a
+                            </div>
+                        </div>
+                        
+                    </div>
                     <div id="ticketInfo">
                         <p class="text-muted">QR kodu okutunca bilet bilgileri burada görünecek.</p>
-                    </div>
-                    <div id="ticketActions" class="mt-3" style="display: none;">
-                        <button id="useTicket" class="btn btn-success">Check In</button>
                     </div>
                 </div>
             </div>
@@ -56,7 +69,10 @@ let currentTicketId = null;
 let lastScannedAt = 0; // ms, debounce
 // DOM Elements
 const ticketInfoDiv = document.getElementById('ticketInfo');
-const ticketActionsDiv = document.getElementById('ticketActions');
+const ticketDetailsDiv = document.getElementById('ticketDetails');
+const ticketHolderDiv = document.getElementById('ticketHolder');
+const ticketLocationDiv = document.getElementById('ticketLocation');
+const ticketEventDiv = document.getElementById('ticketEvent');
 const useTicketBtn = document.getElementById('useTicket');
 const recentScansDiv = document.getElementById('recentScans');
 const readerEl = document.getElementById('reader');
@@ -99,16 +115,6 @@ function checkTicket(ticketUuid) {
     // Loading state
     flashReader('detect','TARANDI');
 
-    ticketInfoDiv.innerHTML = `
-        <div class="text-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Yükleniyor...</span>
-            </div>
-            <p class="mt-2">Bilet kontrol ediliyor...</p>
-        </div>
-    `;
-    ticketActionsDiv.style.display = 'none';
-    
     // API call
     fetch(`/api/check_ticket/${ticketUuid}/`)
         .then(response => {
@@ -138,60 +144,20 @@ function checkTicket(ticketUuid) {
 // Display Ticket Info
 function displayTicketInfo(ticket) {
     const statusBadge = ticket.status === 'used' ? 
-        '<span class="badge bg-danger">Girdi</span>' : 
-        '<span class="badge bg-success">Girmedi</span>';
-    
+        'Girdi' : 
+        'Check In';
+
     const isUsed = ticket.status === 'used';
-    
-    ticketInfoDiv.innerHTML = `
-        <div class="ticket-details">
-            <h4 class="text-primary">${ticket.event_name}</h4>
-            <hr>
-            <div class="row">
-                <div class="col-6">
-                    <strong>Katılımcı:</strong>
-                </div>
-                <div class="col-6">
-                    ${ticket.attendee_name}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <strong>+1 Sayısı:</strong>
-                </div>
-                <div class="col-6">
-                    ${ticket.plus_ones}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <strong>Etkinlik:</strong>
-                </div>
-                <div class="col-6">
-                    ${ticket.event_date}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <strong>Mekan:</strong>
-                </div>
-                <div class="col-6">
-                    ${ticket.event_location}
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-12">
-                    <strong>Durum:</strong> ${statusBadge}
-                </div>
-            </div>
-        </div>
-    `;
-    
-    if (!isUsed) {
-        ticketActionsDiv.style.display = 'block';
-    } else {
-        ticketActionsDiv.style.display = 'none';
-    }
+
+    ticketInfoDiv.style.display = 'none';
+
+    useTicketBtn.className = isUsed ? 'btn btn-danger' : 'btn btn-success';
+    useTicketBtn.innerHTML = statusBadge;
+    ticketHolderDiv.innerHTML = ticket.attendee_name + ' +' + ticket.plus_ones;
+    ticketLocationDiv.innerHTML = ticket.event_location;
+    ticketEventDiv.innerHTML = ticket.event_name;
+
+    ticketDetailsDiv.style.display = 'block';
 }
 
 // Use Ticket
@@ -388,6 +354,34 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 
+.scan-overlay {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 10px 15px;
+    width: 120px;  /* FIX genişlik */
+    height: 40px;  /* FIX yükseklik */
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.9);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px; /* SABİT font */
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 220ms ease, transform 220ms ease;
+    pointer-events: none;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* Küçülmeyi engelle */
+    min-width: 120px !important;
+    max-width: 120px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+}
 
 
 /* optional: slightly different color for overlay text on success/error */
@@ -415,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
     border: 2px dashed #dee2e6;
     border-radius: 8px;
     min-height: 200px;  /* ASLA bundan küçük olmasın */
-    max-height: 500px;
+    max-height: 300px;
     width: 100%;
     overflow: hidden;
     display: block;
