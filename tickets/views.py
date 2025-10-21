@@ -2,7 +2,7 @@ import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.csrf import csrf_exempt
@@ -11,9 +11,14 @@ from .forms import TicketCreateForm, EventForm
 from django.contrib import messages
 from django.utils import timezone
 
+
+@require_GET
+def auth_status(request):
+    """Return whether the current session is authenticated (used by client-side redirect)."""
+    return JsonResponse({'is_authenticated': request.user.is_authenticated})
+
 def home(request):
     # Eğer kullanıcı zaten giriş yapmışsa, rolüne göre yönlendir
-    print(request.user)
 
     if request.user.is_authenticated:
         if request.user.is_superuser:
@@ -108,8 +113,6 @@ def ticket_display(request, ticket_uuid):
 @login_required
 def scanner_dashboard(request):
     # Allow admin or users in Scanner group or staff
-    print(request.user)
-
     user = request.user
     is_scanner = user.is_staff or user.groups.filter(name='Scanner').exists() or user.is_superuser
     if not is_scanner:

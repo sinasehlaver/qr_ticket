@@ -18,4 +18,6 @@ urlpatterns = [
     path('scanner/validate/', views.scanner_validate, name='scanner_validate'),
     path('api/check_ticket/<uuid:ticket_uuid>/', views.check_ticket, name='check_ticket'),
     path('api/use_ticket/<uuid:ticket_uuid>/', views.use_ticket, name='use_ticket'),
+    path('api/auth_status/', views.auth_status, name='auth_status'),  
+
 ]

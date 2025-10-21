@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block title %}Hoş Geldiniz - QR Bilet Sistemi{% endblock %}
-
+<head>
+    
+</head>
 {% block content %}
 <div class="container mt-5">
     {% if request.user.is_authenticated and request.user.is_superuser %}
@@ -92,6 +94,22 @@
 </div>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+    // If the browser shows a cached login page on Back, this fetch ensures we redirect
+    // immediately if the user is already authenticated.
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch("{% url 'tickets:auth_status' %}", { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.is_authenticated) {
+            // redirect authenticated users to events list (adjust if you prefer scanner/dashboard)
+            window.location.replace("{% url 'tickets:event_list' %}");
+          }
+        }).catch(() => { /* ignore network errors */ });
+    });
+  </script>
+{% endblock %}
 {% block extra_css %}
 <style>
 .card {

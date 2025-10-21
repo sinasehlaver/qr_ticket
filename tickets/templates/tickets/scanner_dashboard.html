@@ -7,11 +7,6 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="mb-4">Bilet QR Scanner</h2>
-        </div>
-    </div>
     
     <div class="row">
         <!-- QR Scanner -->
@@ -324,19 +319,32 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         // use low-level Html5Qrcode to avoid built-in UI (no "Stop scanning" text)
         const readerId = "reader";
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        const config = { fps: 10, qrbox: { width: 300, height: 300 } };
         html5QrcodeScanner = new Html5Qrcode(readerId);
         Html5Qrcode.getCameras().then(cameras => {
             if (!cameras || cameras.length === 0) {
-                throw new Error('Cihazda kamera bulunamadı');
+            throw new Error('Cihazda kamera bulunamadı');
             }
-            // prefer environment-facing camera if available
-            const cameraId = cameras[0].id || { facingMode: "environment" };
+
+            // Try to pick a back-facing camera by checking the device label (if available)
+            let selectedCamera = cameras.find(cam =>
+            /back|rear|environment|arrière|arka/i.test(cam.label || '')
+            );
+
+            // Fallback: on many devices the last camera in the list is the rear camera
+            if (!selectedCamera && cameras.length > 1) {
+            selectedCamera = cameras[cameras.length - 1];
+            }
+
+            const cameraId = (selectedCamera && selectedCamera.id) ? selectedCamera.id : cameras[0].id;
+
+            console.log('Selected camera for scanning:', selectedCamera ? selectedCamera.label : cameraId);
+
             return html5QrcodeScanner.start(
-                cameraId,
-                config,
-                onScanSuccess,
-                onScanFailure
+            cameraId,
+            config,
+            onScanSuccess,
+            onScanFailure
             );
         }).then(() => {
             console.log('camera started (no UI buttons shown)');

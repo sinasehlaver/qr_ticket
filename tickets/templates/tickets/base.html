@@ -16,10 +16,6 @@
               <a class="navbar-brand" href="{% url 'tickets:home' %}">
                   <i class="fas fa-qrcode"></i> QR Bilet Sistemi
                 </a>
-                <button class="btn btn-outline-light me-2" id="nav-back-btn" type="button"
-                onclick="(function(){ if(window.history && history.length>1){ history.back(); } else { window.location.href='{% url 'tickets:event_list' %}'; } })();">
-                ← Geri
-            </button>
             {% if user.is_authenticated %}
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
@@ -32,7 +28,7 @@
                     <strong> <a class="nav-link" href="{% url 'tickets:event_list' %}">Etkinlikler</a> </strong>
                 </li>
                 <li class="nav-item">
-                    {% if user.is_superuser %}
+                    {% if user.is_authenticated %}
                     <strong> <a class="nav-link" href="{% url 'admin:index' %}">Admin</a> </strong>
                     {% endif %}
                 </li>
