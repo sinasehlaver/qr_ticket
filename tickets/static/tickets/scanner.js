@@ -1,13 +1,15 @@
 // scanner.js
+// ...existing code...
 document.addEventListener('DOMContentLoaded', function () {
   const resultDiv = document.getElementById('qr-result');
   const ticketInfoDiv = document.getElementById('ticket-info');
   const template = document.getElementById('ticket-template');
-
+  
+  
   function showMessage(text, kind='info') {
     resultDiv.innerHTML = `<div class="alert alert-${kind}">${text}</div>`;
   }
-
+  
   function fetchTicketAndShow(uuid) {
     // fetch details from server (we will just get status by trying to fetch via GET on ticket page)
     // But better experience: call backend to retrieve ticket info (we will use fetch to ticket display page JSON - here we call no endpoint)
@@ -26,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', onCheckIn);
     ticketInfoDiv.appendChild(cloned);
   }
-
+  
   function onCheckIn(ev) {
     const uuid = ev.currentTarget.dataset.uuid;
     fetch(window.location.origin + '/tickets/scanner/validate/', {
@@ -42,16 +44,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show returned ticket info if present
         if (data.ticket) {
           ticketInfoDiv.innerHTML = `
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">${data.ticket.event}</h5>
-                <p><strong>Tarih:</strong> ${data.ticket.event_date}</p>
-                <p><strong>Yer:</strong> ${data.ticket.event_location}</p>
-                <p><strong>Ad:</strong> ${data.ticket.attendee_name}</p>
-                <p><strong>Plus ones:</strong> ${data.ticket.plus_ones}</p>
-                <p><strong>Durum:</strong> ${data.ticket.status}</p>
-              </div>
-            </div>
+          <div class="card">
+          <div class="card-body">
+          <h5 class="card-title">${data.ticket.event}</h5>
+          <p><strong>Tarih:</strong> ${data.ticket.event_date}</p>
+          <p><strong>Yer:</strong> ${data.ticket.event_location}</p>
+          <p><strong>Ad:</strong> ${data.ticket.attendee_name}</p>
+          <p><strong>Plus ones:</strong> ${data.ticket.plus_ones}</p>
+          <p><strong>Durum:</strong> ${data.ticket.status}</p>
+          </div>
+          </div>
           `;
         }
       } else {
@@ -62,11 +64,12 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error(err);
     });
   }
-
+  
   // html5-qrcode initialization
-  const html5QrCode = new Html5Qrcode("qr-reader");
+  const html5QrCode = new html5Qrcode("qr-reader");
   const qrConfig = { fps: 10, qrbox: 250 };
-
+  console.log('scanner.js loaded, html5QrCode=', typeof html5QrCode);
+  
   function onScanSuccess(decodedText, decodedResult) {
     // decodedText contains the UUID
     showMessage('QR kod okundu: ' + decodedText, 'info');

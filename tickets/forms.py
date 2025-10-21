@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ticket
+from .models import Ticket, Event
 
 class TicketCreateForm(forms.ModelForm):
     class Meta:
@@ -7,4 +7,18 @@ class TicketCreateForm(forms.ModelForm):
         fields = ['attendee_name', 'plus_ones']
 
     attendee_name = forms.CharField(label='Adınız ve Soyadınız', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': True}))
-    plus_ones = forms.IntegerField(label='Kaç kişi daha getireceksiniz? (plus_ones)', min_value=0, initial=0, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    plus_ones = forms.IntegerField(label='Kaç kişi daha getireceksiniz?', min_value=0, initial=0, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['name', 'date_time', 'location', 'max_tickets']
+        widgets = {
+            'date_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+        labels = {
+            'name': 'Etkinlik adı',
+            'date_time': 'Tarih / Saat',
+            'location': 'Mekan',
+            'max_tickets': 'Toplam bilet',
+        }

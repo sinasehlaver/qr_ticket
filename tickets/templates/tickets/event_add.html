@@ -1,0 +1,24 @@
+{% extends 'tickets/base.html' %}
+{% load static %}
+
+{% block title %}Yeni Etkinlik Ekle - QR Bilet Sistemi{% endblock %}
+
+{% block content %}
+<h1>Yeni Etkinlik Ekle</h1>
+
+<form method="post">
+  {% csrf_token %}
+  <div>
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+  </div>
+  <button class="btn btn-success" type="submit">Oluştur</button>
+  <a class="btn btn-secondary" href="{% url 'tickets:event_list' %}">İptal</a>
+</form>
+{% endblock %}

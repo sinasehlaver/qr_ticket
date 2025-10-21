@@ -7,7 +7,10 @@ app_name = 'tickets'
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
+    path('logout/', LogoutView.as_view(next_page='tickets:home'), name='logout'),
+    path('events/', views.event_list, name='event_list'),
+    path('events/add/', views.event_create, name='event_create'), 
+    path('events/<int:event_id>/', views.event_landing, name='event_landing'),
     path('event/<int:event_id>/', views.event_landing, name='event_landing'),
     path('ticket/<uuid:ticket_uuid>/', views.ticket_display, name='ticket_display'),
     path('scanner/', views.scanner_dashboard, name='scanner_dashboard'),

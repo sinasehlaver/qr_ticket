@@ -88,6 +88,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+QR_CODE_DIR = MEDIA_ROOT / 'qr_codes'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Django-Heroku helper: sets up some Heroku-friendly settings (optional)

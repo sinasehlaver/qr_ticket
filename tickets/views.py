@@ -7,7 +7,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.csrf import csrf_exempt
 from .models import Event, Ticket
-from .forms import TicketCreateForm
+from .forms import TicketCreateForm, EventForm
 from django.contrib import messages
 from django.utils import timezone
 
@@ -16,11 +16,12 @@ def home(request):
     print(request.user)
 
     if request.user.is_authenticated:
-        if request.user.is_staff or request.user.is_superuser:
-            return redirect('admin:index')
+        if request.user.is_superuser:
+            return redirect('tickets:event_list')
         else:
-            return redirect('scanner_dashboard')
-    
+            if request.user.is_staff:
+                return redirect('tickets:scanner_dashboard')
+
     # Login form işleme
     if request.method == 'POST':
         print("POST request received")
@@ -51,8 +52,25 @@ def home(request):
 
 def event_list(request):
     # Simple list of upcoming events
+    print("Fetching event list")
     events = Event.objects.order_by('date_time')
-    return render(request, 'tickets/event_landing.html', {'events': events, 'single_event_mode': False})
+    add_form = EventForm() if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser) else None
+    return render(request, 'tickets/event_landing.html', {'events': events, 'single_event_mode': False, 'add_form': add_form})
+
+@login_required
+def event_create(request):
+    # only staff or superuser allowed
+    if not (request.user.is_staff or request.user.is_superuser):
+        return HttpResponseForbidden("Yetkiniz yok")
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save()
+            messages.success(request, "Etkinlik oluşturuldu.")
+            return redirect('tickets:event_landing', event_id=event.pk)
+    else:
+        form = EventForm()
+    return render(request, 'tickets/event_add.html', {'form': form})
 
 def event_landing(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
