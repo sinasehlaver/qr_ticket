@@ -355,24 +355,33 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-
 #reader {
+    position: relative; /* don't absolute-position the reader itself (prevents collapse on iPhone) */
     border: 2px dashed #dee2e6;
     border-radius: 8px;
     aspect-ratio: 4 / 3;           /* keeps a camera-friendly box */
-    min-height: 250px;             /* smaller minimum so info area is visible */
-    max-height: 420px;             /* prevent very tall camera area on large screens */
-    height: auto;
+    min-height: 220px;             /* slightly smaller min so info area is visible */
+    max-height: min(48vh, 420px);  /* never more than ~half the screen (48vh) and cap at 420px */
+    width: 100%;
     overflow: hidden;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
     display: block;
-    position: absolute; /* video fills reader-container */
-    top: 0;
-    left: 0;
+    box-sizing: border-box;
 }
 
+/* Ensure the actual video/canvas produced by html5-qrcode fills the reader reliably */
+#reader > video,
+#reader > canvas,
+#reader .html5-qrcode-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    inset: 0;
+}
+
+/* ticket/info area */
 .ticket-info-placeholder,
 #ticketInfo {
     max-height: 360px;
@@ -404,21 +413,33 @@ document.addEventListener('DOMContentLoaded', function() {
     border-color: #dc3545;
 }
 
+/* scan overlay: keep a minimum, fixed visual presence even on small screens */
 .scan-overlay {
-    position: relative;
+    position: absolute;
     top: 12px;
     right: 12px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    background: rgba(0,0,0,0.7);
+    padding: 8px 12px; /* padding'i biraz büyüt */
+    min-width: 100px;  /* minimum genişlik artır */
+    min-height: 36px;  /* minimum yükseklik artır */
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.85); /* arkaplanı daha opak yap */
     color: #fff;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 14px; /* Sabit font büyüklüğü */
+    -webkit-text-size-adjust: 100%; /* iPhone font küçültmesini engelle */
     opacity: 0;
     transform: translateY(-6px);
     transition: opacity 220ms ease, transform 220ms ease;
     pointer-events: none;
     z-index: 50;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Yeni eklenen: */
+    font-size: clamp(12px, 3.5vw, 14px); /* responsive font ama minimum 12px */
+    line-height: 1.2;
 }
 
 .scan-overlay.show {
@@ -447,6 +468,44 @@ document.addEventListener('DOMContentLoaded', function() {
 .btn:hover {
     transform: translateY(-2px);
 }
+/* iPhone özel düzeltmeler */
+@supports (-webkit-touch-callout: none) {
+    .scan-overlay {
+        min-width: 110px; /* iPhone'da biraz daha geniş */
+        min-height: 40px;
+        font-size: 13px; /* iPhone'da daha okunaklı font */
+        padding: 10px 14px;
+    }
+    
+    #reader {
+        min-height: 240px; /* iPhone'da biraz daha büyük */
+    }
+}
 
+/* Küçük ekranlar için responsive ayarlar */
+@media (max-width: 375px) { /* iPhone SE, mini vs */
+    .scan-overlay {
+        min-width: 95px;
+        min-height: 34px;
+        font-size: 12px;
+        padding: 6px 10px;
+        top: 8px;
+        right: 8px;
+    }
+}
+
+@media (max-width: 320px) { /* Çok küçük ekranlar */
+    .scan-overlay {
+        min-width: 85px;
+        min-height: 30px;
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    #reader { aspect-ratio: 16 / 9; min-height: 180px; max-height: min(44vh, 300px); }
+    #ticketInfo { max-height: 260px; }
+}
 </style>
 {% endblock %}
