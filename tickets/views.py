@@ -38,7 +38,7 @@ def home(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request, f'Hoş geldiniz {username}!')
+                #messages.success(request, f'Hoş geldiniz {username}!')
                 
                 # Kullanıcı tipine göre yönlendirme
                 if user.is_superuser:
