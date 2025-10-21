@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .scan-overlay {
-    position: absolute;
+    position: relative;
     top: 12px;
     right: 12px;
     padding: 6px 10px;
@@ -448,9 +448,5 @@ document.addEventListener('DOMContentLoaded', function() {
     transform: translateY(-2px);
 }
 
-@media (max-width: 767.98px) {
-    .reader-container { aspect-ratio: 16 / 9; min-height: 180px; max-height: 300px; }
-    #ticketInfo { max-height: 260px; }
-}
 </style>
 {% endblock %}
