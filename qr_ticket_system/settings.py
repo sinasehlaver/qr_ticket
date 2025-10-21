@@ -58,7 +58,7 @@ WSGI_APPLICATION = 'qr_ticket_system.wsgi.application'
 # Database: prefer DATABASE_URL; fallback to sqlite for local dev
 DATABASE_URL = os.getenv('DATABASE_URL')
 if DATABASE_URL:
-    DATABASES = {'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
+    DATABASES = {'default': dj_database_url.config(conn_max_age=600, ssl_require=True)}
 else:
     DATABASES = {
         'default': {
@@ -91,6 +91,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 QR_CODE_DIR = MEDIA_ROOT / 'qr_codes'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 
 # Django-Heroku helper: sets up some Heroku-friendly settings (optional)
 try:
