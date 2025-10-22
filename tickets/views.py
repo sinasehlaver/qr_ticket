@@ -12,6 +12,12 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
 
+
+@require_GET
+def auth_status(request):
+    """Return whether the current session is authenticated (used by client-side redirect)."""
+    return JsonResponse({'is_authenticated': request.user.is_authenticated})
+
 def _normalize_query(q: str) -> str:
     # collapse multiple spaces and trim
     return ' '.join(q.split()).strip()
@@ -54,10 +60,6 @@ def search_tickets(request):
 
     return JsonResponse(results, safe=False)
 
-@require_GET
-def auth_status(request):
-    """Return whether the current session is authenticated (used by client-side redirect)."""
-    return JsonResponse({'is_authenticated': request.user.is_authenticated})
 
 def home(request):
     # Eğer kullanıcı zaten giriş yapmışsa, rolüne göre yönlendir
