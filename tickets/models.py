@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.core.files.base import ContentFile
 import qrcode
 from django.urls import reverse
+from django.db.models import Sum
 
 def qr_upload_path(instance, filename):
     # store under media/qr_codes/<uuid>.png
@@ -21,7 +22,9 @@ class Event(models.Model):
         return f"{self.name} @ {self.date_time.strftime('%Y-%m-%d %H:%M')}"
 
     def tickets_sold(self):
-        return self.tickets.count()
+        ticket_count = self.tickets.count()
+        plus_ones_total = self.tickets.aggregate(total=Sum('plus_ones'))['total'] or 0
+        return ticket_count + plus_ones_total
     tickets_sold.short_description = "Tickets Sold"
 
 class Ticket(models.Model):
