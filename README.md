@@ -33,6 +33,10 @@ python manage.py runserver
 - Files saved to `media/` are ephemeral on Heroku. For persistent storage, configure S3 (not included here).
 - Heroku config vars should be used for `SECRET_KEY` and `DATABASE_URL`.
 
+'''
+python manage.py migrate; python manage.py createsuperuser --noinput --username sina --email sinasehlaver@gmail.com; python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); u = User.objects.get(username='sina'); u.set_password('pass'); u.save()"; 
+'''
+
 ## Scanner user
 
 Create a scanner user via Django admin, put them in group `Scanner` or set `is_staff=True`. Scanner and Admin can sign in at `/admin/` (or use /accounts/login/ if you add dj-auth later).
